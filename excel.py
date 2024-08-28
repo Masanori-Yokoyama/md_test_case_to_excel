@@ -9,9 +9,15 @@ from openpyxl.styles.borders import BORDER_THIN
 
 
 def write_summary(df: pd.DataFrame, writer: pd.ExcelWriter, sheet_name: str = "Summary") -> None:
-    df_summary = pd.DataFrame(index=["正常", "異常"], columns=["OK", "NG", "--"])
-    for row, col in product(list(df_summary.index), list(df_summary.columns)):
-        df_summary[col][row] = ((df["pos-neg"] == row) & (df["result"] == col)).sum()
+    summary_data = []
+    index=["正常", "異常"]
+    columns=["OK", "NG", "--"]
+    for r in range(len(index)):
+        summary_data.append([])
+        for c in range(len(columns)):
+            value = ((df["pos-neg"] == index[r]) & (df["result"] == columns[c])).sum()
+            summary_data[r].append(value)
+    df_summary = pd.DataFrame(data=summary_data, index=index, columns=columns)
 
     df_summary.to_excel(writer, sheet_name=sheet_name)
     worksheet = writer.sheets[sheet_name]
@@ -76,6 +82,7 @@ def write_test_specification(df: pd.DataFrame, writer: pd.ExcelWriter, config_ex
                                                      top=Side(style=BORDER_THIN),
                                                      bottom=Side(style=BORDER_THIN))
 
+    df_excel.to_excel(writer, sheet_name=sheet_name)
 
 def convert_df_to_excel(df: pd.DataFrame, config_excel: dict, output_path: str = "sample.xlsx",
                         merge_cells: bool = True) -> None:
@@ -88,13 +95,10 @@ def convert_df_to_excel(df: pd.DataFrame, config_excel: dict, output_path: str =
     Returns:
         None
     """
-    writer = pd.ExcelWriter(output_path)
-
-    write_summary(df, writer)
-    write_test_specification(df, writer, config_excel, merge_cells)
-
     try:
-        writer.save()
+        with pd.ExcelWriter(output_path) as writer:
+            write_summary(df, writer)
+            write_test_specification(df, writer, config_excel, merge_cells)
     except PermissionError:
         sys.stderr.write("[ERROR] 仕様書のエクセルファイルを閉じてください")
         sys.exit(1)

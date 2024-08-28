@@ -63,6 +63,10 @@ $ python3 converter.py -f sample.md -m
 
 - First Commit!
 
+### v0.2.0 (2024/08/28)
+
+- pandas = "^2.2.2" 対応
+
 ## Acknowledgements
 
 The format of markdown borrows heavily from [ryuta46/eval-spec-maker](https://github.com/ryuta46/eval-spec-maker). The python code borrows from [torisawa/convert.py](https://gist.github.com/toriwasa/37c690862ddf67d43cfd3e1af4e40649)

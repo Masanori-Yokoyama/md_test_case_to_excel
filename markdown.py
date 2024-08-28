@@ -17,7 +17,7 @@ def load_md(input_path: str):
 
 def append_df(df: pd.DataFrame, current_item_dict: dict) -> pd.DataFrame:
     # ここまでの項目をデータフレームに追加
-    _df = df.append(pd.Series([v for _, v in current_item_dict.items()], index=df.columns), ignore_index=True)
+    _df = pd.concat([df, pd.Series([v for _, v in current_item_dict.items()],index=df.columns).to_frame().T])
 
     # 終わったら初期化
     current_item_dict["steps"] = ""
